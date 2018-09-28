@@ -13,6 +13,7 @@ CLIENT_SECRET = ".\\client_secret.json"
 SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 STORAGE = Storage('credentials.storage')
 
+
 # Start the OAuth flow to retrieve credentials
 
 
@@ -20,7 +21,7 @@ def authorize_credentials():
     # Fetch credentials from storage
     credentials = STORAGE.get()
     # If the credentials doesn't exist in the storage location then run the flow
-# If the credentials doesn't exist in the storage location then run the flow
+    # If the credentials doesn't exist in the storage location then run the flow
     if credentials is None or credentials.invalid:
         flow = flow_from_clientsecrets(CLIENT_SECRET, scope=SCOPE)
         http = httplib2.Http()
@@ -42,7 +43,7 @@ def get_google_sheet(spreadsheetId):
     return values
 
 
-def makeGraph(spreadsheetId):
+def make_graph(spreadsheetId):
     get_google_sheet(spreadsheetId)
 
 
@@ -51,14 +52,27 @@ def main():
 
     # print("Timestamp\t\t\tStudent\t\tClass\t\tTest\t\tGrade Guesss\tMethod(s) Used\tMethod(s) Future")
 
-    ids = []
-    strategies = []
-    grades = []
-    for value in range(len(values)):
-        ids.append(values[value][2])
-        strategies.append(values[value][5])
-        grades.append(values[value][10])
-        print()
+    avgs = []
+    sum1 = 0
+    count = 0
+    strats = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    for i in range(len(values)):
+        if values[i][2] == "200":
+            tmp = values[i][5].split(",")
+            for j in range(len(tmp)):
+                if tmp[j] != "":
+                    print(int(tmp[j]))
+                    strats[int(tmp[j])] = strats[int(tmp[j])] + 1
+                    strats[int(tmp[j])][] =
+
+    print(strats)
+
+    # print(tmp[:j])
+    # strats[i].append(tmp[j:])
+
+    # y_pos = np.arange(len(values))
+    # plt.barh()
 
 
 if __name__ == main():
