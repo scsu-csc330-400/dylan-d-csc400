@@ -13,7 +13,6 @@ CLIENT_SECRET = ".\\client_secret.json"
 SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 STORAGE = Storage('credentials.storage')
 
-
 # Start the OAuth flow to retrieve credentials
 
 
@@ -21,6 +20,7 @@ def authorize_credentials():
     # Fetch credentials from storage
     credentials = STORAGE.get()
     # If the credentials doesn't exist in the storage location then run the flow
+# If the credentials doesn't exist in the storage location then run the flow
     if credentials is None or credentials.invalid:
         flow = flow_from_clientsecrets(CLIENT_SECRET, scope=SCOPE)
         http = httplib2.Http()
@@ -33,8 +33,9 @@ def get_google_sheet(spreadsheetId):
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
     service = build('sheets', 'v4', http=http, discoveryServiceUrl=discoveryUrl)
-
     rangeName = "Responses Copy"
+    discoveryUrl = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
+    service = build('sheets', 'v4', http=http, discoveryServiceUrl=discoveryUrl)
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', [])
