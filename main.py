@@ -59,7 +59,6 @@ def main():
         grades.append(values[value][10])
         print()
 
-    for
 
 if __name__ == main():
     main()
