@@ -43,9 +43,6 @@ def make_graph(spreadsheet_id):
 
 def main():
     values = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k')
-
-    # print("Timestamp\t\t\tStudent\t\tClass\t\tTest\t\tGrade Guesss\tMethod(s) Used\tMethod(s) Future")
-
     avgs = [0] * 13
     sum_strats = [0] * 17
     sums = [0] * 17
@@ -67,16 +64,15 @@ def main():
                      "Asking questions in office hours"
                      ]
 
+    class_num = "101"
     for i in range(len(values)):
-        if values[i][2] == "200":
+        if values[i][2] == class_num:
             tmp = values[i][5].split(",")
             for j in range(len(tmp)):
                 if tmp[j] != "":
                     sum_strats[int(tmp[j])] = sum_strats[int(tmp[j])] + 1
                     sums[(int(tmp[j]))] = sums[(int(tmp[j]))] + int(values[i][10])
 
-    print(sum_strats)
-    print(sums)
     sum_strats.pop(0)
     sums.pop(0)
     sum_strats.pop(3)
@@ -85,6 +81,8 @@ def main():
     sums.pop(10)
     sum_strats.pop(13)
     sums.pop(13)
+    print(sum_strats)
+    print(sums)
 
     for i in range(len(sum_strats)):
         if sums[i] == 0:
@@ -100,11 +98,11 @@ def main():
     plt.xlabel('Study Strategies', fontsize=15)
     plt.ylabel('Averages', fontsize=15)
     plt.xticks(index, strat_strings, fontsize=8, rotation=30)
-    plt.title('Exam #1', fontsize=20)
+    plt.title('BIO ' + class_num + ' Exam #1', fontsize=20)
     plt.subplots_adjust(left=0.05, right=0.95, bottom=0.25, top=0.95)
     figure = plt.gcf()
     figure.set_size_inches(20, 8)
-    figure.savefig('foo.png', dpi=150)
+    figure.savefig('BIO ' + class_num + '.png', dpi=150)
 
 
 if __name__ == main():
