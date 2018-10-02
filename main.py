@@ -25,46 +25,37 @@ def authorize_credentials():
     return credentials
 
 
-def get_google_sheet(spreadsheet_id):
+def get_google_sheet(spreadsheet_id, range):
     credentials = authorize_credentials()
     http = credentials.authorize(httplib2.Http())
     discovery_url = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
     service = build('sheets', 'v4', http=http, discoveryServiceUrl=discovery_url)
-    range_name = "Responses Copy"
+    range_name = range
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheet_id, range=range_name).execute()
     values = result.get('values', [])
     return values
 
 
-def make_graph(spreadsheet_id):
-    get_google_sheet(spreadsheet_id)
-
-
 def main():
-    values = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k')
+    values = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k', "Responses Copy")
+    strats = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k', "Lookup!A13:C28")
+
+    colors = []
+    strat_strings = []
+
+    for i in range(len(strats)):
+        strat_strings.append(strats[i][0])
+        if strats[i][2] == "P":
+            colors.append("red")
+        elif strats[i][2] == "A":
+            colors.append("blue")
+
     avgs = [0] * 13
     sum_strats = [0] * 17
     sums = [0] * 17
-    strat_strings = ["I attended class",
-                     "I paid attention in class",
-                     "I participated in class",
-                     # "None of the listed responses",
-                     "Rereading chapters in the textbook",
-                     "Highlighting material in\nthe textbook",
-                     "Rereading class notes",
-                     "Rewriting class notes (verbatim) ",
-                     "Rewriting class notes (while\nactively reorganizing material)",
-                     "Rereading class learning\nobjectives or goals",
-                     "Using class learning objectives\nor goals as practice exam questions",
-                     # "Studying independently",
-                     "Creating and using flashcards",
-                     "Quizzing myself with a blank sheet\nof paper or dry erase board",
-                     # "Studying with a classmate or in small groups",
-                     "Asking questions in office hours"
-                     ]
-
     class_num = "101"
+
     for i in range(len(values)):
         if values[i][2] == class_num:
             tmp = values[i][5].split(",")
@@ -92,16 +83,23 @@ def main():
 
     print(avgs)
 
+    avgs, strat_strings = (list(t) for t in zip(*sorted(zip(avgs, strat_strings))))
+    print(avgs)
+
+    for i in range(len(avgs)):
+        if avgs[0] == 0:
+            avgs.pop(0)
+            strat_strings.pop(0)
+
     index = np.arange(len(strat_strings))
-    plt.bar(index, avgs, align='edge', color=['red', 'blue', 'blue', 'red', 'red', 'red', 'red',
-                                              'blue', 'red', 'blue', 'blue', 'blue', 'blue'])
+    plt.bar(index, avgs, align='edge', color=['blue', 'red', 'red', 'blue', 'red', 'red'])
     plt.xlabel('Study Strategies', fontsize=15)
     plt.ylabel('Averages', fontsize=15)
     plt.xticks(index, strat_strings, fontsize=8, rotation=30)
     plt.title('BIO ' + class_num + ' Exam #1', fontsize=20)
     plt.subplots_adjust(left=0.05, right=0.95, bottom=0.25, top=0.95)
     figure = plt.gcf()
-    figure.set_size_inches(20, 8)
+    figure.set_size_inches(20, 9)
     figure.savefig('BIO ' + class_num + '.png', dpi=150)
 
 
