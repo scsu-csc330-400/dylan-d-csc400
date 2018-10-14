@@ -2,10 +2,13 @@ import textwrap
 
 import httplib2
 import numpy as np
+
 from googleapiclient.discovery import build
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import run_flow
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 CLIENT_SECRET = ".\\client_secret.json"
@@ -38,20 +41,20 @@ def get_google_sheet(spreadsheet_id, range_name):
     return values
 
 
-def main():
+def make_graph(exam, class_num, color_passive, color_active):
     values = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k', "Responses Copy")
     strats = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k', "Lookup!A13:C28")
 
-    class_num = "200"
-
     colors = []
     strat_strings = []
+    sum_strats = []
+    sums = []
 
     for i in range(len(strats)):
         if strats[i][2] == "P":
-            colors.append("red")
+            colors.append(color_passive)
         elif strats[i][2] == "A":
-            colors.append("blue")
+            colors.append(color_active)
 
     avgs = [0] * len(colors)
     tmp_sum_strats = [0] * (len(strats))
@@ -67,9 +70,6 @@ def main():
 
     print(tmp_sum_strats)
     print(tmp_sums)
-
-    sum_strats = []
-    sums = []
 
     for i in range(len(tmp_sum_strats)):
         if strats[i][2] != "N/A":
@@ -102,11 +102,9 @@ def main():
     plt.xlabel('Study Strategies', fontsize=15)
     plt.ylabel('Averages', fontsize=15)
     plt.xticks(index, strat_strings, fontsize=10)
-    plt.title('BIO ' + class_num + ' Exam #1', fontsize=20)
+    plt.title('BIO ' + class_num + ' Exam #' + exam, fontsize=20)
     plt.subplots_adjust(left=0.05, right=0.95, bottom=0.20, top=0.95)
     figure = plt.gcf()
     figure.set_size_inches(20, 8)
     figure.savefig('BIO ' + class_num + '.png', dpi=150)
-
-
-main()
+    figure.clf()
