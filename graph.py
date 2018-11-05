@@ -1,50 +1,15 @@
 import textwrap
-
-import httplib2
 import numpy as np
+import sheet
 
-from googleapiclient.discovery import build
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.file import Storage
-from oauth2client.tools import run_flow
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-CLIENT_SECRET = ".\\client_secret.json"
-SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-STORAGE = Storage('credentials.storage')
-
-
-# Start the OAuth flow to retrieve credentials
-
-
-def authorize_credentials():
-    # Fetch credentials from storage
-    credentials = STORAGE.get()
-    # If the credentials doesn't exist in the storage location then run the flow
-    if credentials is None or credentials.invalid:
-        flow = flow_from_clientsecrets(CLIENT_SECRET, scope=SCOPE)
-        http = httplib2.Http()
-        credentials = run_flow(flow, STORAGE, http=http)
-    return credentials
-
-
-def get_google_sheet(spreadsheet_id, range_name):
-    credentials = authorize_credentials()
-    http = credentials.authorize(httplib2.Http())
-    discovery_url = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
-    service = build('sheets', 'v4', http=http, discoveryServiceUrl=discovery_url)
-    result = service.spreadsheets().values().get(
-        spreadsheetId=spreadsheet_id, range=range_name).execute()
-    values = result.get('values', [])
-    return values
-
 
 def make_graph(exam, class_num, color_passive, color_active):
-    values = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k', "Responses Copy")
-    strats = get_google_sheet('1Jh3ehawbeYeLSsCBQFuO_MKqE6IjBDBByY6qBvC7K-k', "Lookup!A13:C28")
-
+    values = sheet.get_google_sheet("Responses Copy")
+    strats = sheet.get_google_sheet("Lookup!A13:28")
     colors = []
     strat_strings = []
     sum_strats = []
@@ -61,7 +26,7 @@ def make_graph(exam, class_num, color_passive, color_active):
     tmp_sums = [0] * (len(strats))
 
     for i in range(len(values)):
-        if values[i][2] == class_num:
+        if values[i][2] == class_num and values[i][3] == exam:
             tmp = values[i][5].split(",")
             for j in range(len(tmp)):
                 if tmp[j] != "":
@@ -106,5 +71,8 @@ def make_graph(exam, class_num, color_passive, color_active):
     plt.subplots_adjust(left=0.05, right=0.95, bottom=0.20, top=0.95)
     figure = plt.gcf()
     figure.set_size_inches(20, 8)
-    figure.savefig('BIO ' + class_num + '.png', dpi=150)
+    figure.savefig('.//graphs//BIO ' + class_num + '.png', dpi=150)
     figure.clf()
+
+
+
