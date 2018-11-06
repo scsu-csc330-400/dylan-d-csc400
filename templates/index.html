@@ -6,11 +6,13 @@
 </head>
 <body>
     <h1>Study Strategies</h1>
+    <b>Generate Graph</b>
     <form method="POST">
-        <select name="exam">
+        <select name="exam_gen">
             <option value="1">Exam 1</option>
+            <option value="2">Exam 2</option>
         </select>
-        <select name="class_num">
+        <select name="class_num_gen">
             <option value="101">BIO 101</option>
             <option value="103">BIO 103</option>
             <option value="200">BIO 200</option>
@@ -36,7 +38,43 @@
             <option value="k">Black</option>
         </select>
         <br><br>
-        <input type="submit">
+        <input type="submit" value="Generate">
     </form>
+    <br>
+    <b>Upload Grades</b>
+    <form action = "/verify" method = "POST" enctype = "multipart/form-data">
+        <select name="exam_up">
+            <option value="1">Exam 1</option>
+            <option value="2">Exam 2</option>
+        </select>
+        <select name="class_num_up">
+            <option value="101">BIO 101</option>
+            <option value="103">BIO 103</option>
+            <option value="200">BIO 200</option>
+        </select>
+        <br><br>
+        <input type="file" name="file">
+        <br>
+        <input type = "submit" value="Upload">
+    </form>
+    <br>
+    {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+                <form action = "/upload" method = "POST" enctype = "multipart/form-data">
+                    <button>Add anyway</button>
+                </form>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 </body>
 </html>
