@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% set active_page = "index" %}
+{% block content %}
+<div class="main-content-inner">
+<div class="row justify-content-center" >
+<div class="col-lg-3">
+<div class="mt-5">
+<div class="card">
+<div class="card-body">
+    <h4 align="center" class="header-title">Generate</h4>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div>
+            <label class="col-form-label">Graph type:</label>
+        </div>
+        <div class="form-group">
+        {% for subfield in form.type %}
+            <div class="custom-control custom-radio custom-control-inline">
+            {{ subfield(class="custom-control-input", onclick="clicked('"+subfield.label.text+"')") }}
+            {{ subfield.label(class="custom-control-label") }}
+
+        </div>
+            {% endfor %}
+        </div>
+        <div class="form-row justify-content-center">
+            <div class="form-row justify-content-center">
+                <div class="col-md-5 mb-3">
+                    <label class="col-form-label">Semester</label>
+                    {{ form.semester(class="form-control", required="") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="col-form-label">CRN</label>
+                    {{ form.CRN(class="form-control", required="") }}
+                </div>
+                <div class="col-md-3 mb-3" id="examgroup">
+                    <label class="col-form-label">Exam</label>
+                    {{ form.exam(class="form-control", required="") }}
+                </div>
+            </div>
+        </div>
+        <div class="form-group" id="color">
+        <div class="form-group">
+            <label class="col-form-label">Passive Color:</label>
+            {{ form.color_passive(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label class="col-form-label">Active Color:</label>
+            {{ form.color_active(class="form-control") }}
+        </div>
+        </div>
+        <div align="center">
+            <input type="submit" class="btn btn-primary" value="Generate">
+        </div>
+    </form>
+</div>
+</div>
+</div>
+</div>
+    {% if filename != '' %}
+    <div class="col-lg-9 mt-5">
+    <img src="{{url_for('static', filename=filename)}}">
+        {% endif %}
+
+</div>
+</div>
+</div>
+    <script>
+        window.onload = function() {
+            document.getElementById("color").style.display = "none"
+            document.getElementById("examgroup").style.display = "none"
+        }
+
+        function clicked(element){
+            if(element == "By Class" || element == "By Exam"){
+                document.getElementById("color").style.display = "none"
+                document.getElementById("examgroup").style.display = "none"
+            }else{
+                document.getElementById("color").style.display = "inline"
+                document.getElementById("examgroup").style.display = "inline"
+            }
+        }
+
+
+        let semester_select = document.getElementById('semester');
+        let CRN_select = document.getElementById('CRN');
+        let test_select = document.getElementById('exam');
+
+        semester_select.onchange = function() {
+            semester = semester_select.value;
+
+            fetch('/CRN/' + semester).then(function(response) {
+
+                response.json().then(function(data) {
+                    let optionHTML = '<option value="">---</option>';
+
+                    for(let CRN of data.CRNs) {
+                        optionHTML += '<option value="' + CRN.class_id + '">' + CRN.CRN + '</option>';
+                    }
+
+                     CRN_select.innerHTML = optionHTML;
+
+                });
+            });
+        }
+
+        CRN_select.onchange = function() {
+            CRN = CRN_select.value;
+
+            fetch('/test/' + CRN).then(function(response) {
+
+                response.json().then(function(data) {
+                    let optionHTML = '';
+
+                    for(let test of data.tests) {
+                        optionHTML += '<option value="' + test.exam_num + '">' + test.exam_num + '</option>';
+                    }
+
+                     test_select.innerHTML = optionHTML;
+                });
+            });
+        }
+    </script>
+    <br>
+    {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
