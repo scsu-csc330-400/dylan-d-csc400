@@ -18,6 +18,7 @@ app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'super secret key'
+app.config['JSON_SORT_KEYS'] = False
 
 
 class GenForm(FlaskForm):
@@ -48,6 +49,18 @@ class AddClassForm(FlaskForm):
 
 class AddExamForm(FlaskForm):
     class_id = SelectField('class_id', choices=[])
+
+
+class RemoveExamForm(FlaskForm):
+    class_id = SelectField('class_id', choices=[])
+
+
+class RemoveClassForm(FlaskForm):
+    class_id = SelectField('class_id', choices=[])
+
+
+class ViewTables(FlaskForm):
+    tables = SelectField('tables', choices=[])
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -94,8 +107,8 @@ def index():
     return render_template('index.html', form=form, heading="Analyze", filename=filename)
 
 
-@app.route('/edit', methods=['GET', 'POST'])
-def edit():
+@app.route('/add', methods=['GET', 'POST'])
+def add():
     add_class_form = AddClassForm()
     CRN = add_class_form.CRN.data
     class_name = add_class_form.class_name.data
@@ -112,7 +125,15 @@ def edit():
 
     if "add_class" in request.form:
         if CRN is "" or class_name is "" or class_num is "" or semester is "":
-            flash("Input error", "cat1")
+            flash("Input error", "cat3")
+        elif not CRN.isdigit():
+            flash("Invalid CRN", "cat3")
+        elif not class_name.isalpha():
+            flash("Invalid class name", "cat3")
+        elif not class_num.isdigit():
+            flash("Invalid class number", "cat3")
+        elif not semester.isalpha():
+            flash("Invalid semester", "cat3")
         else:
             cursor.execute(
                 "INSERT INTO Class (CRN, class_name, class_num, semester)"
@@ -125,7 +146,7 @@ def edit():
             class_id = cursor.fetchall()
             cursor.close()
             conn.close()
-            flash("New Class ID: {}".format(class_id[0][0]), "cat1")
+            flash("New Class ID: {}".format(class_id[0][0]), "cat4")
 
     elif "add_exam" in request.form:
         if class_id is "":
@@ -137,19 +158,79 @@ def edit():
             exam_num = 1
             if len(exam_nums) is not 0:
                 exam_num = exam_nums[-1][0] + 1
-
-            cursor.execute("INSERT INTO Exam (class_id, exam_num) VALUES('{}', '{}')".format(class_id,
-                                                                                             exam_num))
-            cursor.execute("SELECT exam_id FROM Exam WHERE class_id = '{}' AND exam_num = '{}'".format(
-                class_id, exam_num))
-            exam_id = cursor.fetchall()
-            flash("New Exam ID: {}".format(exam_id[0][0]), "cat1")
-            conn.commit()
+            print(class_id)
+            if exam_num > 3:
+                flash('This class already has 3 exams', 'cat2')
+            else:
+                cursor.execute("INSERT INTO Exam (class_id, semester, exam_num) VALUES('{}', (SELECT semester FROM "
+                               "Class WHERE class_id = {}), '{}')".format(class_id, class_id, exam_num))
+                cursor.execute("SELECT exam_id FROM Exam WHERE class_id = '{}' AND exam_num = '{}'".format(
+                    class_id, exam_num))
+                exam_id = cursor.fetchall()
+                flash("New Exam ID: {}".format(exam_id[0][0]), "cat1")
+                conn.commit()
             conn.close()
             cursor.close()
     conn.close()
     cursor.close()
-    return render_template('edit.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit")
+    return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit")
+
+
+@app.route('/view', methods=['GET', 'POST'])
+def view():
+    tables_select = ViewTables()
+
+    conn = db.db_conn()
+    cursor = conn.cursor()
+    cursor.execute("SHOW TABLES")
+    table_list = cursor.fetchall()
+    conn.close()
+    cursor.close()
+
+    tables = tables_select.tables.data
+    tables_select.tables.choices = [("", "---")] + [(table_list[0], table_list[0]) for table_list in table_list]
+
+    return render_template('view.html', tables_select=tables_select, heading="View")
+
+
+@app.route('/remove', methods=['GET', 'POST'])
+def remove():
+    conn = db.db_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT class_id FROM Class")
+    class_ids = cursor.fetchall()
+
+    cursor.execute("SELECT exam_id FROM Exam")
+    exam_ids = cursor.fetchall()
+
+    remove_class_form = RemoveClassForm()
+    remove_class = remove_class_form.class_id.data
+    remove_class_form.class_id.choices = [("", "---")] + [(class_ids[0], class_ids[0]) for class_ids in class_ids]
+
+    remove_exam_form = RemoveExamForm()
+    remove_exam = remove_class_form.class_id.data
+    remove_exam_form.class_id.choices = [("", "---")] + [(exam_ids[0], exam_ids[0]) for exam_ids in exam_ids]
+
+    if "remove_class" in request.form:
+        cursor.execute("DELETE FROM Responses Where class_id = {}".format(remove_class))
+        conn.commit()
+        cursor.execute("DELETE FROM methods_used Where class_id = {}".format(remove_class))
+        conn.commit()
+        cursor.execute("DELETE FROM Exam Where class_id = {}".format(remove_class))
+        conn.commit()
+        cursor.execute("DELETE FROM Class Where class_id = {}".format(remove_class))
+        conn.commit()
+    elif "remove_exam" in request.form:
+        cursor.execute("DELETE FROM Responses Where exam_id = {}".format(remove_exam))
+        conn.commit()
+        cursor.execute("DELETE FROM methods_used Where exam_id = {}".format(remove_exam))
+        conn.commit()
+        cursor.execute("DELETE FROM Exam Where exam_id = {}".format(remove_exam))
+    remove_class_form.class_id.choices = [("", "---")] + [(class_ids[0], class_ids[0]) for class_ids in class_ids]
+    remove_exam_form.class_id.choices = [("", "---")] + [(exam_ids[0], exam_ids[0]) for exam_ids in exam_ids]
+    cursor.close()
+    conn.close()
+    return render_template('remove.html', remove_class_form=remove_class_form, remove_exam_form=remove_exam_form, heading="Remove")
 
 
 @app.route('/CRN/<semester>')
@@ -189,25 +270,27 @@ def get_test(class_id):
     return jsonify({'tests': testsArray})
 
 
-@app.route('/class_submit', methods=['GET', 'POST'])
-def class_submit():
-    class_name = request.form.get('class_name')
-    class_num = request.form.get('class_num')
-    semester = request.form.get('semester')
-    if not (class_name or class_num or semester):
-        flash("Input error!", "cat1")
-        return render_template('add_class.html')
-    else:
-        print(class_name, class_num, semester)
-        connect = db.db_conn()
-        cur = connect.cursor()
-        cur.execute(
-            "INSERT INTO Class (class_name, class_num, semester) VALUES('" + class_name + "', '" + class_num + "', '" + semester + "');")
-        connect.commit()
-        cur.close()
-        connect.close()
-        flash("Added Class", "cat1")
-        return render_template('index.html')
+@app.route('/table/<table>')
+def get_table(table):
+    conn = db.db_conn()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM StudyStrategies1.{}".format(table))
+    table_vals = cursor.fetchall()
+    cursor.execute("SELECT COLUMN_NAME FROM information_schema.columns WHERE TABLE_SCHEMA = 'StudyStrategies1' AND "
+                   "TABLE_NAME = '{}';".format(table))
+    table_cols = cursor.fetchall()
+    print(table_cols)
+    conn.close()
+    cursor.close()
+    test_array = []
+
+    for i in range(len(table_vals)):
+        testObj = {}
+        for j in range(len(table_cols)):
+            testObj.update({table_cols[j][0]: table_vals[i][j]})
+        test_array.append(testObj)
+
+    return jsonify(test_array)
 
 
 @app.errorhandler(404)

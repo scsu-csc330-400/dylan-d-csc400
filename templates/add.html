@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% set active_page = "Add" %}
+{% block content %}
+<div class="main-content-inner">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-ml-12">
+                <div class="col-12 mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 align="center" class="header-title">Add Class</h4>
+                            <form method = "POST">
+                                <div class="form-row align-items-center">
+                                    <div class="form-row">
+                                        <div class="form-row">
+                                            <div class="col-md-3 mb-3">
+                                                <label for={{ add_class_form.CRN.name }}>CRN</label>
+                                                    {{ add_class_form.CRN(class="form-control", placeholder="CRN", required="", maxlength="5") }}
+                                                <div class="invalid-feedback">
+                                                    Please provide a CRN.
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="class_name">Class Name</label>
+                                                    {{ add_class_form.class_name(class="form-control", placeholder="Class Name", required="", maxlength="20") }}
+                                                <div class="invalid-feedback">
+                                                    Please provide a class name.
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="class_num">Class Number</label>
+                                                    {{ add_class_form.class_num(class="form-control", placeholder="Class Number", required="", maxlength="3") }}
+                                                <div class="invalid-feedback">
+                                                    Please provide a class number.
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="semester">Semester</label>
+                                                {{ add_class_form.semester(class="form-control", placeholder="Semester", required="", maxlength="8") }}
+                                                <div class="invalid-feedback">
+                                                    Please provide a semester.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" align="center">
+                                    <input type = "submit" class="btn btn-primary" name="add_class" value="Add Class">
+                                </div>
+                            </form>
+                            {% with messages = get_flashed_messages(category_filter=["cat3"]) %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="form-group">
+                                            <div class="alert alert-danger" role="alert">
+                                            {{ message }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                            {% with messages = get_flashed_messages(category_filter=["cat4"]) %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="form-group">
+                                            <div class="alert alert-success" role="alert">
+                                            {{ message }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-ml-12">
+                <div class=" mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 align="center" class="header-title">Add an Exam</h4>
+                            <div align="center">
+                                <form method = "POST">
+                                    <div align="center" class="form-group">
+                                        <label class="col-form-label">Class ID</label>
+                                        {{ add_exam_form.class_id(class="form-control col-sm-6", required="") }}
+                                    </div>
+                                    <div class="form-group">
+                                        <input type = "submit" class="btn btn-primary" name="add_exam" value="Add Exam">
+                                    </div >
+                                </form>
+                                    {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                <div class="alert alert-success" role="alert">
+                                                {{ message }}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endwith %}
+                                    {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                                <div class="alert alert-danger" role="alert">
+                                                {{ message }}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endwith %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
