@@ -164,6 +164,7 @@ def test1(class_num):
 def test3(semester):
     return
 
+
 def autolabel(rects, ax):
     for rect in rects:
         h = rect.get_height()

@@ -3,8 +3,7 @@
 {% block content %}
 <div class="main-content-inner">
 <div class="row justify-content-center" >
-<div class="col-lg-3">
-<div class="mt-5">
+<div class="col-lg-3 mt-5">
 <div class="card">
 <div class="card-body">
     <h4 align="center" class="header-title">Generate</h4>
@@ -55,7 +54,6 @@
 </div>
 </div>
 </div>
-</div>
     {% if filename != '' %}
     <div class="col-lg-9 mt-5">
     <img src="{{url_for('static', filename=filename)}}">
@@ -79,7 +77,6 @@
                 document.getElementById("examgroup").style.display = "inline"
             }
         }
-
 
         let semester_select = document.getElementById('semester');
         let CRN_select = document.getElementById('CRN');
@@ -121,12 +118,4 @@
         }
     </script>
     <br>
-    {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
-        {% if messages %}
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
 {% endblock %}
-
