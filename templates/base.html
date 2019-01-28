@@ -51,7 +51,8 @@
                             <nav>
                         {% set navigation_bar = [
                             ('/', 'Analyze', 'Analyze'),
-                            ('edit', 'Edit', 'Edit')
+                            ('add', 'Edit', 'Edit'),
+                            ('view', 'View', 'View')
                         ] -%}
                         {% set active_page = active_page|default('index') -%}
                                 <ul id="nav_menu">
@@ -61,9 +62,20 @@
                                 <a href="{{ href|e }}">
                                     <i>{% if caption == "Analyze" %} <i class="ti-dashboard"></i>
                                         {% elif caption == "Edit" %} <i class="fa fa-align-left"></i>
+                                        {% elif caption == "View" %} <i class="fa fa-eye"></i>
                                         {% endif %} </i>
                                     <span>{{ caption|e }}</span>
                                 </a>
+                                {% if caption == "Edit" %}
+                                <ul class="submenu">
+                                    <li>
+                                        <a href="{{ url_for('add') }}">Add</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ url_for('remove') }}">Remove</a>
+                                    </li>
+                                </ul>
+                                {% endif %}
                             </li>
                             {% endfor %}
                         </ul>
