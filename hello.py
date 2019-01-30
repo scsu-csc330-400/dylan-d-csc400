@@ -45,6 +45,7 @@ class AddClassForm(FlaskForm):
     class_name = TextField('class_name')
     class_num = TextField('class_num')
     semester = TextField('class_num')
+    students = TextField('class_num')
 
 
 class AddExamForm(FlaskForm):
@@ -114,6 +115,7 @@ def add():
     class_name = add_class_form.class_name.data
     class_num = add_class_form.class_num.data
     semester = add_class_form.semester.data
+    students = add_class_form.students.data
 
     add_exam_form = AddExamForm()
     conn = db.db_conn()
@@ -122,6 +124,18 @@ def add():
     class_ids = cursor.fetchall()
     class_id = add_exam_form.class_id.data
     add_exam_form.class_id.choices = [("", "---")] + [(class_ids[0], class_ids[0]) for class_ids in class_ids]
+
+    add_grades_form = GenForm()
+    cursor.execute("SELECT DISTINCT semester FROM Class")
+    semesters = cursor.fetchall()
+    add_grades_form.semester.choices = [("", "---")] + [(semesters[0], semesters[0]) for semesters in semesters]
+    add_grades_form.CRN.choices = [("", "---")]
+    add_grades_form.exam.choices = [("", "---")]
+    upload_grade = add_grades_form.data
+
+    semester_grade = add_grades_form.semester.data
+    class_id_grade = add_grades_form.CRN.data
+    exam_grade = add_grades_form.exam.data
 
     if "add_class" in request.form:
         if CRN is "" or class_name is "" or class_num is "" or semester is "":
@@ -173,7 +187,7 @@ def add():
             cursor.close()
     conn.close()
     cursor.close()
-    return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit")
+    return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit", add_grades_form=add_grades_form)
 
 
 @app.route('/view', methods=['GET', 'POST'])
@@ -187,7 +201,6 @@ def view():
     conn.close()
     cursor.close()
 
-    tables = tables_select.tables.data
     tables_select.tables.choices = [("", "---")] + [(table_list[0], table_list[0]) for table_list in table_list]
 
     return render_template('view.html', tables_select=tables_select, heading="View")
@@ -230,7 +243,8 @@ def remove():
     remove_exam_form.class_id.choices = [("", "---")] + [(exam_ids[0], exam_ids[0]) for exam_ids in exam_ids]
     cursor.close()
     conn.close()
-    return render_template('remove.html', remove_class_form=remove_class_form, remove_exam_form=remove_exam_form, heading="Remove")
+    return render_template('remove.html', remove_class_form=remove_class_form, remove_exam_form=remove_exam_form,
+                           heading="Remove")
 
 
 @app.route('/CRN/<semester>')

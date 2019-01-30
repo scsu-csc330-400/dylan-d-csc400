@@ -9,39 +9,23 @@
                         <div class="card-body">
                             <h4 align="center" class="header-title">Add Class</h4>
                             <form method = "POST">
-                                <div class="form-row align-items-center">
-                                    <div class="form-row">
-                                        <div class="form-row">
-                                            <div class="col-md-3 mb-3">
-                                                <label for={{ add_class_form.CRN.name }}>CRN</label>
-                                                    {{ add_class_form.CRN(class="form-control", placeholder="CRN", required="", maxlength="5") }}
-                                                <div class="invalid-feedback">
-                                                    Please provide a CRN.
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 mb-3">
-                                                <label for="class_name">Class Name</label>
-                                                    {{ add_class_form.class_name(class="form-control", placeholder="Class Name", required="", maxlength="20") }}
-                                                <div class="invalid-feedback">
-                                                    Please provide a class name.
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 mb-3">
-                                                <label for="class_num">Class Number</label>
-                                                    {{ add_class_form.class_num(class="form-control", placeholder="Class Number", required="", maxlength="3") }}
-                                                <div class="invalid-feedback">
-                                                    Please provide a class number.
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 mb-3">
-                                                <label for="semester">Semester</label>
-                                                {{ add_class_form.semester(class="form-control", placeholder="Semester", required="", maxlength="8") }}
-                                                <div class="invalid-feedback">
-                                                    Please provide a semester.
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="form-row justify-content-center">
+                                    <div class="col-md-2 mb-3">
+                                            {{ add_class_form.CRN(class="form-control", placeholder="CRN", required="", maxlength="5") }}
                                     </div>
+                                    <div class="col-md-2 mb-3">
+                                            {{ add_class_form.class_name(class="form-control", placeholder="Class Name", required="", maxlength="20") }}
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                            {{ add_class_form.class_num(class="form-control", placeholder="Class Number", required="", maxlength="3") }}
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        {{ add_class_form.semester(class="form-control", placeholder="Semester", required="", maxlength="8") }}
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        {{ add_class_form.students(class="form-control", placeholder="Students", required="", maxlength="2") }}
+                                    </div>
+
                                 </div>
                                 <div class="form-group" align="center">
                                     <input type = "submit" class="btn btn-primary" name="add_class" value="Add Class">
@@ -77,7 +61,7 @@
                 <div class=" mt-5">
                     <div class="card">
                         <div class="card-body">
-                            <h4 align="center" class="header-title">Add an Exam</h4>
+                            <h4 align="center" class="header-title">Add Exam</h4>
                             <div align="center">
                                 <form method = "POST">
                                     <div align="center" class="form-group">
@@ -86,7 +70,7 @@
                                     </div>
                                     <div class="form-group">
                                         <input type = "submit" class="btn btn-primary" name="add_exam" value="Add Exam">
-                                    </div >
+                                    </div>
                                 </form>
                                     {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
                                         {% if messages %}
@@ -110,8 +94,85 @@
                 </div>
             </div>
         </div>
-    </div>
+            <div class="col-lg-3 mt-5">
+
+            <div class="card">
+<div class="card-body">
+    <h4 align="center" class="header-title">Add Grades</h4>
+    <form method="POST" enctype="multipart/form-data">
+            <div class="form-row justify-content-center">
+                <div class="col-md-5 mb-3">
+                    <label class="col-form-label">Semester</label>
+                    {{ add_grades_form.semester(class="form-control", required="", id="semester_grade") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="col-form-label">CRN</label>
+                    {{ add_grades_form.CRN(class="form-control", required="", id="CRN_grade") }}
+                </div>
+                <div class="col-md-3 mb-3" id="examgroup">
+                    <label class="col-form-label">Exam</label>
+                    {{ add_grades_form.exam(class="form-control", required="", id="exam_grade") }}
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label class="col-form-label">Grades</label>
+                    <div class="custom-file">
+                        {{ add_grades_form.upload(class="custom-file-input", required="", type="file") }}
+                        <label class="custom-file-label">Choose file</label>
+                    </div>
+                </div>
+            </div>
+        <div align="center">
+            <input type="submit" class="btn btn-primary" value="Upload">
+        </div>
+    </form>
 </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    let semester_select = document.getElementById('semester_grade');
+    let CRN_select = document.getElementById('CRN_grade');
+    let test_select = document.getElementById('exam_grade');
+
+    semester_select.onchange = function() {
+        semester = semester_select.value;
+        console.log(semester)
+
+        fetch('/CRN/' + semester).then(function(response) {
+
+            response.json().then(function(data) {
+                let optionHTML = '<option value="">---</option>';
+
+                for(let CRN of data.CRNs) {
+                    optionHTML += '<option value="' + CRN.class_id + '">' + CRN.CRN + '</option>';
+                }
+
+                 CRN_select.innerHTML = optionHTML;
+
+            });
+        });
+    }
+
+    CRN_select.onchange = function() {
+        CRN = CRN_select.value;
+
+        fetch('/test/' + CRN).then(function(response) {
+
+            response.json().then(function(data) {
+                let optionHTML = '';
+
+                for(let test of data.tests) {
+                    optionHTML += '<option value="' + test.exam_num + '">' + test.exam_num + '</option>';
+                }
+
+                 test_select.innerHTML = optionHTML;
+            });
+        });
+    }
+</script>
+
 
 
 
