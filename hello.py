@@ -8,6 +8,7 @@ from flask import Flask, flash, render_template, request, send_file, jsonify, ur
 from flask_wtf import FlaskForm
 from werkzeug.utils import secure_filename, redirect
 from wtforms import SelectField, TextField, FileField, RadioField
+from openpyxl import load_workbook
 
 import db
 
@@ -131,7 +132,7 @@ def add():
     add_grades_form.semester.choices = [("", "---")] + [(semesters[0], semesters[0]) for semesters in semesters]
     add_grades_form.CRN.choices = [("", "---")]
     add_grades_form.exam.choices = [("", "---")]
-    upload_grade = add_grades_form.data
+    upload_grade = add_grades_form.upload.data
 
     semester_grade = add_grades_form.semester.data
     class_id_grade = add_grades_form.CRN.data
@@ -148,6 +149,8 @@ def add():
             flash("Invalid class number", "cat3")
         elif not semester.isalpha():
             flash("Invalid semester", "cat3")
+        elif not students.isdigit():
+            flash("Invalid student number", "cat3")
         else:
             cursor.execute(
                 "INSERT INTO Class (CRN, class_name, class_num, semester)"
@@ -158,9 +161,17 @@ def add():
                 "= '{}'".format(
                     CRN, class_name, class_num, semester))
             class_id = cursor.fetchall()
+            ids_list = []
+            for i in range(int(students)):
+                cursor.execute("INSERT INTO Student (class_id) VALUES('{}')".format(class_id[0][0]))
+                conn.commit()
+                cursor.execute("SELECT student_identifier FROM Student Where class_id = {}".format(class_id[0][0]))
+                id_tmp = cursor.fetchall()
+                ids_list.append(id_tmp[i][0])
+            students_range = str(ids_list[0]) + ' - ' + str(ids_list[len(ids_list)-1])
             cursor.close()
             conn.close()
-            flash("New Class ID: {}".format(class_id[0][0]), "cat4")
+            flash("New Class ID: {} with student ids from {}".format(class_id[0][0], students_range), "cat4")
 
     elif "add_exam" in request.form:
         if class_id is "":
@@ -185,6 +196,33 @@ def add():
                 conn.commit()
             conn.close()
             cursor.close()
+    elif "add_grades" in request.form:
+        filename = secure_filename(upload_grade.filename)
+        path = os.path.join('grades', filename)
+        upload_grade.save(path)
+        wb = load_workbook(path)
+        ws = wb.active
+        max_row = ws.max_row
+        ids_tmp = ws['A2:A' + str(max_row)]
+        grades_tmp = ws['B2:B' + str(max_row)]
+        ids = []
+        grades = []
+
+        for i in range(len(ids_tmp)):
+            ids.append(ids_tmp[i][0].value)
+
+        for i in range(len(grades_tmp)):
+            grades.append(grades_tmp[i][0].value)
+
+        grades_dict = dict(zip(ids, grades))
+
+        for student_id, grade in grades_dict.items():
+            print(student_id, grade)
+            cursor.execute("SELECT response_id FROM Responses WHERE student_identifier = {} AND class_id = {} AND exam_num = {}".format(student_id, class_id_grade, exam_grade))
+            response_id_tmp = cursor.fetchall()
+            print(response_id_tmp[0][0])
+            cursor.execute("UPDATE Responses SET grade = {} WHERE response_id = {}".format(grade, response_id_tmp[0][0]))
+            conn.commit()
     conn.close()
     cursor.close()
     return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit", add_grades_form=add_grades_form)
@@ -226,21 +264,17 @@ def remove():
 
     if "remove_class" in request.form:
         cursor.execute("DELETE FROM Responses Where class_id = {}".format(remove_class))
-        conn.commit()
         cursor.execute("DELETE FROM methods_used Where class_id = {}".format(remove_class))
-        conn.commit()
         cursor.execute("DELETE FROM Exam Where class_id = {}".format(remove_class))
-        conn.commit()
+        cursor.execute("DELETE FROM Student WHERE Class_id = {}".format(remove_class))
         cursor.execute("DELETE FROM Class Where class_id = {}".format(remove_class))
         conn.commit()
+
     elif "remove_exam" in request.form:
         cursor.execute("DELETE FROM Responses Where exam_id = {}".format(remove_exam))
-        conn.commit()
         cursor.execute("DELETE FROM methods_used Where exam_id = {}".format(remove_exam))
-        conn.commit()
         cursor.execute("DELETE FROM Exam Where exam_id = {}".format(remove_exam))
-    remove_class_form.class_id.choices = [("", "---")] + [(class_ids[0], class_ids[0]) for class_ids in class_ids]
-    remove_exam_form.class_id.choices = [("", "---")] + [(exam_ids[0], exam_ids[0]) for exam_ids in exam_ids]
+        conn.commit()
     cursor.close()
     conn.close()
     return render_template('remove.html', remove_class_form=remove_class_form, remove_exam_form=remove_exam_form,
