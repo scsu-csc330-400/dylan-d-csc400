@@ -80,6 +80,7 @@ def index():
     form.CRN.choices = [("", "---")]
     form.exam.choices = [("", "---")]
 
+    semester = form.semester.data
     class_id = form.CRN.data
     exam = form.exam.data
     color_passive = form.color_passive.data
@@ -101,7 +102,7 @@ def index():
                 filename = graph_test.test1(class_id)
                 # return send_file(".//graphs//BIO " + class_id + ".png", mimetype='image/png')
             elif graph_type == '2':
-                flash("Under construction", "cat1")
+                filename = graph_test.test2(semester)
             elif graph_type == '3':
                 filename = graph_test.test(exam, class_id, color_passive, color_active)
                 # return send_file(".//graphs//BIO " + class_id + ".png", mimetype='image/png')

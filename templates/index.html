@@ -27,7 +27,7 @@
                     <label class="col-form-label">Semester</label>
                     {{ form.semester(class="form-control", required="") }}
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3" id="crngroup">
                     <label class="col-form-label">CRN</label>
                     {{ form.CRN(class="form-control", required="") }}
                 </div>
@@ -69,10 +69,14 @@
         }
 
         function clicked(element){
-            if(element == "By Class" || element == "By Exam"){
+            if(element == "By Exam"){
+                document.getElementById("crngroup").style.display = "inline"
                 document.getElementById("color").style.display = "none"
                 document.getElementById("examgroup").style.display = "none"
+            }
+            else if(element == "By Class"){
             }else{
+                document.getElementById("crngroup").style.display = "inline"
                 document.getElementById("color").style.display = "inline"
                 document.getElementById("examgroup").style.display = "inline"
             }
