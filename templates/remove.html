@@ -1,60 +1,62 @@
 {% extends 'base.html' %}
 {% set active_page = "Add" %}
 {% block content %}
-<div class="main-content-inner">
-    <div class="row justify-content-center">
-        <div class="col-lg-2 col-ml-12">
+    <div class="main-content-inner">
+        <div class="row justify-content-center">
+            <div class="col-lg-2 col-ml-12">
                 <div class=" mt-5">
                     <div class="card">
                         <div class="card-body">
                             <h4 align="center" class="header-title">Remove Class</h4>
                             <div align="center">
-                                <form method = "POST">
+                                <form method="POST">
                                     <div align="center" class="form-group">
                                         <label class="col-form-label">Class ID</label>
                                         {{ remove_class_form.class_id(class="form-control col-sm-6", required="") }}
                                     </div>
                                     <div class="form-group">
-                                        <input type = "submit" class="btn btn-primary" name="remove_class" value="Remove Class">
-                                    </div >
+                                        <input type="submit" class="btn btn-primary" name="remove_class"
+                                               value="Remove Class">
+                                    </div>
                                 </form>
-                                    {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
-                                        {% if messages %}
-                                            {% for message in messages %}
-                                                <div class="alert alert-success" role="alert">
+                                {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-success" role="alert">
+                                            {{ message }}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endwith %}
+                                {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-danger" role="alert">
                                                 {{ message }}
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endwith %}
-                                    {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
-                                        {% if messages %}
-                                            {% for message in messages %}
-                                                <div class="alert alert-danger" role="alert">
-                                                {{ message }}
-                                                </div>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endwith %}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endwith %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-            <div class="col-lg-2 col-ml-12">
-                <div class=" mt-5">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 align="center" class="header-title">Remove Exam</h4>
-                            <div align="center">
-                                <form method = "POST">
-                                    <div align="center" class="form-group">
-                                        <label class="col-form-label">Exam ID</label>
-                                        {{ remove_exam_form.class_id(class="form-control col-sm-6", required="") }}
-                                    </div>
-                                    <div class="form-group">
-                                        <input type = "submit" class="btn btn-primary" name="remove_exam" value="Remove Exam">
-                                    </div>
-                                </form>
+                <div class="col-lg-2 col-ml-12">
+                    <div class=" mt-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 align="center" class="header-title">Remove Exam</h4>
+                                <div align="center">
+                                    <form method="POST">
+                                        <div align="center" class="form-group">
+                                            <label class="col-form-label">Exam ID</label>
+                                            {{ remove_exam_form.class_id(class="form-control col-sm-6", required="") }}
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="submit" class="btn btn-primary" name="remove_exam"
+                                                   value="Remove Exam">
+                                        </div>
+                                    </form>
                                     {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
                                         {% if messages %}
                                             {% for message in messages %}
@@ -67,19 +69,18 @@
                                         {% if messages %}
                                             {% for message in messages %}
                                                 <div class="alert alert-danger" role="alert">
-                                                {{ message }}
+                                                    {{ message }}
                                                 </div>
                                             {% endfor %}
                                         {% endif %}
                                     {% endwith %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-
 {% endblock %}

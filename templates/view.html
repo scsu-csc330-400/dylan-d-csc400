@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
 {% set active_page = "Add" %}
 {% block content %}
-<div class="main-content-inner">
-    <div class="row justify-content-center">
-        <div class="col-lg-12 col-ml-12">
-            <div class=" mt-5">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 align="center" class="header-title">View</h4>
-                        <div align="center">
-                            <div align="center" class="form-group">
-                                {{ tables_select.tables(class="form-control col-sm-6") }}
-                            </div>
-                            <div id="table">
+    <div class="main-content-inner">
+        <div class="row justify-content-center">
+            <div class="col-lg-12 col-ml-12">
+                <div class=" mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 align="center" class="header-title">View</h4>
+                            <div align="center">
+                                <div align="center" class="form-group">
+                                    {{ tables_select.tables(class="form-control col-sm-6") }}
+                                </div>
+                                <div id="table">
 
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -21,63 +22,59 @@
             </div>
         </div>
     </div>
-</div>
-<script>
+    <script>
         let table_select = document.getElementById('tables');
-        table_select.onchange = function() {
-        table = table_select.value;
-        draw = "<table class='table table-hover text-center'>"
+        table_select.onchange = function () {
+            let table = table_select.value;
 
-        fetch('/table/' + table).then(function(response) {
-            response.json().then(function(data) {
-            CreateTableFromJSON(data)
-            function CreateTableFromJSON(data) {
+            fetch('/table/' + table).then(function (response) {
+                response.json().then(function (data) {
+                    CreateTableFromJSON(data);
 
-        // EXTRACT VALUE FOR HTML HEADER.
-        // ('Book ID', 'Book Name', 'Category' and 'Price')
-        var col = [];
-        for (var i = 0; i < data.length; i++) {
-            for (var key in data[i]) {
-                if (col.indexOf(key) === -1) {
-                    col.push(key);
-                }
-            }
-        }
+                    function CreateTableFromJSON(data) {
 
-        // CREATE DYNAMIC TABLE.
-        var table = document.createElement("table");
-        table.setAttribute("class", "table table-hover text-center")
-        // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+                        // EXTRACT VALUE FOR HTML HEADER.
+                        // ('Book ID', 'Book Name', 'Category' and 'Price')
+                        let col = [];
+                        for (let i = 0; i < data.length; i++) {
+                            for (let key in data[i]) {
+                                if (col.indexOf(key) === -1) {
+                                    col.push(key);
+                                }
+                            }
+                        }
 
-        var tr = table.insertRow(-1);                   // TABLE ROW.
+                        // CREATE DYNAMIC TABLE.
+                        let table = document.createElement("table");
+                        table.setAttribute("class", "table table-hover text-center")
+                        // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
 
-        for (var i = 0; i < col.length; i++) {
-            var th = document.createElement("th");      // TABLE HEADER.
-            th.innerHTML = col[i];
-            tr.appendChild(th);
-        }
+                        let tr = table.insertRow(-1);                   // TABLE ROW.
 
-        // ADD JSON DATA TO THE TABLE AS ROWS.
-        for (var i = 0; i < data.length; i++) {
+                        for (let i = 0; i < col.length; i++) {
+                            var th = document.createElement("th");      // TABLE HEADER.
+                            th.innerHTML = col[i];
+                            tr.appendChild(th);
+                        }
 
-            tr = table.insertRow(-1);
+                        // ADD JSON DATA TO THE TABLE AS ROWS.
+                        for (let i = 0; i < data.length; i++) {
 
-            for (var j = 0; j < col.length; j++) {
-                var tabCell = tr.insertCell(-1);
-                tabCell.innerHTML = data[i][col[j]];
-            }
-        }
+                            tr = table.insertRow(-1);
 
-        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
-        var divContainer = document.getElementById("table");
-        divContainer.innerHTML = "";
-        divContainer.appendChild(table);
-    }
+                            for (let j = 0; j < col.length; j++) {
+                                let tabCell = tr.insertCell(-1);
+                                tabCell.innerHTML = data[i][col[j]];
+                            }
+                        }
+
+                        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+                        let divContainer = document.getElementById("table");
+                        divContainer.innerHTML = "";
+                        divContainer.appendChild(table);
+                    }
                 });
             });
         }
-</script>
-
-
-
+    </script>
 {% endblock %}

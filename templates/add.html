@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 {% set active_page = "Add" %}
 {% block content %}
-<div class="main-content-inner">
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-ml-12">
+    <div class="main-content-inner">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-ml-12">
                 <div class="col-12 mt-5">
                     <div class="card">
                         <div class="card-body">
                             <h4 align="center" class="header-title">Add Class</h4>
-                            <form method = "POST">
+                            <form method="POST">
                                 <div class="form-row justify-content-center">
                                     <div class="col-md-2 mb-3">
-                                            {{ add_class_form.CRN(class="form-control", placeholder="CRN", required="", maxlength="5") }}
+                                        {{ add_class_form.CRN(class="form-control", placeholder="CRN", required="", maxlength="5") }}
                                     </div>
                                     <div class="col-md-2 mb-3">
-                                            {{ add_class_form.class_name(class="form-control", placeholder="Class Name", required="", maxlength="20") }}
+                                        {{ add_class_form.class_name(class="form-control", placeholder="Class Name", required="", maxlength="20") }}
                                     </div>
                                     <div class="col-md-2 mb-3">
-                                            {{ add_class_form.class_num(class="form-control", placeholder="Class Number", required="", maxlength="3") }}
+                                        {{ add_class_form.class_num(class="form-control", placeholder="Class Number", required="", maxlength="3") }}
                                     </div>
                                     <div class="col-md-2 mb-3">
                                         {{ add_class_form.semester(class="form-control", placeholder="Semester", required="", maxlength="8") }}
@@ -28,7 +28,7 @@
 
                                 </div>
                                 <div class="form-group" align="center">
-                                    <input type = "submit" class="btn btn-primary" name="add_class" value="Add Class">
+                                    <input type="submit" class="btn btn-primary" name="add_class" value="Add Class">
                                 </div>
                             </form>
                             {% with messages = get_flashed_messages(category_filter=["cat3"]) %}
@@ -36,7 +36,7 @@
                                     {% for message in messages %}
                                         <div class="form-group">
                                             <div class="alert alert-danger" role="alert">
-                                            {{ message }}
+                                                {{ message }}
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -47,133 +47,129 @@
                                     {% for message in messages %}
                                         <div class="form-group">
                                             <div class="alert alert-success" role="alert">
-                                            {{ message }}
+                                                {{ message }}
                                             </div>
                                         </div>
                                     {% endfor %}
                                 {% endif %}
                             {% endwith %}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-2 col-ml-12">
+            <div class="col-lg-2 col-ml-12">
                 <div class=" mt-5">
                     <div class="card">
                         <div class="card-body">
                             <h4 align="center" class="header-title">Add Exam</h4>
                             <div align="center">
-                                <form method = "POST">
+                                <form method="POST">
                                     <div align="center" class="form-group">
                                         <label class="col-form-label">Class ID</label>
                                         {{ add_exam_form.class_id(class="form-control col-sm-6", required="") }}
                                     </div>
                                     <div class="form-group">
-                                        <input type = "submit" class="btn btn-primary" name="add_exam" value="Add Exam">
+                                        <input type="submit" class="btn btn-primary" name="add_exam" value="Add Exam">
                                     </div>
                                 </form>
-                                    {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
-                                        {% if messages %}
-                                            {% for message in messages %}
-                                                <div class="alert alert-success" role="alert">
+                                {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-success" role="alert">
+                                            {{ message }}
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endwith %}
+                                {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-danger" role="alert">
                                                 {{ message }}
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endwith %}
-                                    {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
-                                        {% if messages %}
-                                            {% for message in messages %}
-                                                <div class="alert alert-danger" role="alert">
-                                                {{ message }}
-                                                </div>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% endwith %}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mt-5">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 align="center" class="header-title">Add Grades</h4>
+                            <form method="POST" enctype="multipart/form-data">
+                                <div class="form-row justify-content-center">
+                                    <div class="col-md-5 mb-3">
+                                        <label class="col-form-label">Semester</label>
+                                        {{ add_grades_form.semester(class="form-control", required="", id="semester_grade") }}
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="col-form-label">CRN</label>
+                                        {{ add_grades_form.CRN(class="form-control", required="", id="CRN_grade") }}
+                                    </div>
+                                    <div class="col-md-3 mb-3" id="examgroup">
+                                        <label class="col-form-label">Exam</label>
+                                        {{ add_grades_form.exam(class="form-control", required="", id="exam_grade") }}
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="col-form-label">Grades</label>
+                                        <div class="custom-file">
+                                            {{ add_grades_form.upload(class="custom-file-input", required="", type="file") }}
+                                            <label class="custom-file-label">Choose file</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div align="center">
+                                    <input type="submit" class="btn btn-primary" name="add_grades" value="Upload">
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-            <div class="col-lg-3 mt-5">
+    </div>
+    <script>
+        let semester_select = document.getElementById('semester_grade');
+        let CRN_select = document.getElementById('CRN_grade');
+        let test_select = document.getElementById('exam_grade');
 
-            <div class="card">
-<div class="card-body">
-    <h4 align="center" class="header-title">Add Grades</h4>
-    <form method="POST" enctype="multipart/form-data">
-            <div class="form-row justify-content-center">
-                <div class="col-md-5 mb-3">
-                    <label class="col-form-label">Semester</label>
-                    {{ add_grades_form.semester(class="form-control", required="", id="semester_grade") }}
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="col-form-label">CRN</label>
-                    {{ add_grades_form.CRN(class="form-control", required="", id="CRN_grade") }}
-                </div>
-                <div class="col-md-3 mb-3" id="examgroup">
-                    <label class="col-form-label">Exam</label>
-                    {{ add_grades_form.exam(class="form-control", required="", id="exam_grade") }}
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label class="col-form-label">Grades</label>
-                    <div class="custom-file">
-                        {{ add_grades_form.upload(class="custom-file-input", required="", type="file") }}
-                        <label class="custom-file-label">Choose file</label>
-                    </div>
-                </div>
-            </div>
-        <div align="center">
-            <input type="submit" class="btn btn-primary" name="add_grades" value="Upload">
-        </div>
-    </form>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<script>
-    let semester_select = document.getElementById('semester_grade');
-    let CRN_select = document.getElementById('CRN_grade');
-    let test_select = document.getElementById('exam_grade');
+        semester_select.onchange = function () {
+            semester = semester_select.value;
+            console.log(semester);
 
-    semester_select.onchange = function() {
-        semester = semester_select.value;
-        console.log(semester)
+            fetch('/CRN/' + semester).then(function (response) {
 
-        fetch('/CRN/' + semester).then(function(response) {
+                response.json().then(function (data) {
+                    let optionHTML = '<option value="">---</option>';
 
-            response.json().then(function(data) {
-                let optionHTML = '<option value="">---</option>';
+                    for (let CRN of data.CRNs) {
+                        optionHTML += '<option value="' + CRN.class_id + '">' + CRN.CRN + '</option>';
+                    }
 
-                for(let CRN of data.CRNs) {
-                    optionHTML += '<option value="' + CRN.class_id + '">' + CRN.CRN + '</option>';
-                }
+                    CRN_select.innerHTML = optionHTML;
 
-                 CRN_select.innerHTML = optionHTML;
-
+                });
             });
-        });
-    }
+        };
 
-    CRN_select.onchange = function() {
-        CRN = CRN_select.value;
+        CRN_select.onchange = function () {
+            CRN = CRN_select.value;
 
-        fetch('/test/' + CRN).then(function(response) {
+            fetch('/test/' + CRN).then(function (response) {
 
-            response.json().then(function(data) {
-                let optionHTML = '';
+                response.json().then(function (data) {
+                    let optionHTML = '';
 
-                for(let test of data.tests) {
-                    optionHTML += '<option value="' + test.exam_num + '">' + test.exam_num + '</option>';
-                }
+                    for (let test of data.tests) {
+                        optionHTML += '<option value="' + test.exam_num + '">' + test.exam_num + '</option>';
+                    }
 
-                 test_select.innerHTML = optionHTML;
+                    test_select.innerHTML = optionHTML;
+                });
             });
-        });
-    }
-</script>
-
-
-
-
+        }
+    </script>
 {% endblock %}

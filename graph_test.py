@@ -91,7 +91,7 @@ def test1(class_num):
         for j in range(13):
             cursor.execute(
                 'SELECT count(`{}`) from methods_used where `{}` = 1 and class_id = {} and exam_id = {}'.format(
-                    j, j, class_num, i+1))
+                    j, j, class_num, i + 1))
             result = cursor.fetchall()
             responses_list.append(result[0][0])
         exam_list.append(responses_list)
@@ -190,17 +190,17 @@ def test2(semester):
     rects_list = []
     for i in range(len(sums)):
         if i == 0:
-            rects = ax.bar(index, sums[i], width, color='red', label='Class {}'.format(i+1))
+            rects = ax.bar(index, sums[i], width, color='red', label='Class {}'.format(i + 1))
             rects_list.append(rects)
             autolabel(rects, ax)
             print(sums[i])
         elif i == 1:
-            rects = ax.bar(index + width, sums[i], width, color='green', label='Class {}'.format(i+1))
+            rects = ax.bar(index + width, sums[i], width, color='green', label='Class {}'.format(i + 1))
             rects_list.append(rects)
             autolabel(rects, ax)
             print(sums[i])
         else:
-            rects = ax.bar(index + width * i, sums[i], width, color='blue', label='Class {}'.format(i+1))
+            rects = ax.bar(index + width * i, sums[i], width, color='blue', label='Class {}'.format(i + 1))
             rects_list.append(rects)
             autolabel(rects, ax)
             print(sums[i])

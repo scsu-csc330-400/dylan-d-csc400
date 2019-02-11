@@ -1,16 +1,14 @@
 import os
 
-from flask_wtf.file import FileRequired, FileAllowed
-
-import graph_test
-
-from flask import Flask, flash, render_template, request, send_file, jsonify, url_for
+from flask import Flask, flash, render_template, request, jsonify, url_for
 from flask_wtf import FlaskForm
-from werkzeug.utils import secure_filename, redirect
-from wtforms import SelectField, TextField, FileField, RadioField
+from flask_wtf.file import FileRequired, FileAllowed
 from openpyxl import load_workbook
+from werkzeug.utils import secure_filename, redirect
+from wtforms import SelectField, StringField, FileField, RadioField
 
 import db
+import graph_test
 
 UPLOAD_FOLDER = './/upload'
 ALLOWED_EXTENSIONS = {'xls', 'xlsx'}
@@ -42,11 +40,11 @@ class GenForm(FlaskForm):
 
 
 class AddClassForm(FlaskForm):
-    CRN = TextField('CRN')
-    class_name = TextField('class_name')
-    class_num = TextField('class_num')
-    semester = TextField('class_num')
-    students = TextField('class_num')
+    CRN = StringField('CRN')
+    class_name = StringField('class_name')
+    class_num = StringField('class_num')
+    semester = StringField('class_num')
+    students = StringField('class_num')
 
 
 class AddExamForm(FlaskForm):
@@ -95,17 +93,12 @@ def index():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        if form.semester.data is "" or form.CRN.data is "" or form.exam.data is "":
-            flash("Select values before generating a graph", "cat1")
-        else:
             if graph_type == '1':
                 filename = graph_test.test1(class_id)
-                # return send_file(".//graphs//BIO " + class_id + ".png", mimetype='image/png')
             elif graph_type == '2':
                 filename = graph_test.test2(semester)
             elif graph_type == '3':
                 filename = graph_test.test(exam, class_id, color_passive, color_active)
-                # return send_file(".//graphs//BIO " + class_id + ".png", mimetype='image/png')
     print(filename)
     return render_template('index.html', form=form, heading="Analyze", filename=filename)
 
@@ -169,7 +162,7 @@ def add():
                 cursor.execute("SELECT student_identifier FROM Student Where class_id = {}".format(class_id[0][0]))
                 id_tmp = cursor.fetchall()
                 ids_list.append(id_tmp[i][0])
-            students_range = str(ids_list[0]) + ' - ' + str(ids_list[len(ids_list)-1])
+            students_range = str(ids_list[0]) + ' - ' + str(ids_list[len(ids_list) - 1])
             cursor.close()
             conn.close()
             flash("New Class ID: {} with student ids from {}".format(class_id[0][0], students_range), "cat4")
@@ -219,14 +212,18 @@ def add():
 
         for student_id, grade in grades_dict.items():
             print(student_id, grade)
-            cursor.execute("SELECT response_id FROM Responses WHERE student_identifier = {} AND class_id = {} AND exam_num = {}".format(student_id, class_id_grade, exam_grade))
+            cursor.execute(
+                "SELECT response_id FROM Responses WHERE student_identifier = {} AND class_id = {} AND exam_num = {}".format(
+                    student_id, class_id_grade, exam_grade))
             response_id_tmp = cursor.fetchall()
             print(response_id_tmp[0][0])
-            cursor.execute("UPDATE Responses SET grade = {} WHERE response_id = {}".format(grade, response_id_tmp[0][0]))
+            cursor.execute(
+                "UPDATE Responses SET grade = {} WHERE response_id = {}".format(grade, response_id_tmp[0][0]))
             conn.commit()
     conn.close()
     cursor.close()
-    return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit", add_grades_form=add_grades_form)
+    return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit",
+                           add_grades_form=add_grades_form)
 
 
 @app.route('/view', methods=['GET', 'POST'])
@@ -272,7 +269,7 @@ def remove():
         conn.commit()
 
     elif "remove_exam" in request.form:
-        cursor.execute("DELETE FROM Responses Where exam_id = {}".format(remove_exam))
+        cursor.execute("DELETE FROM Responses Where exam_num = {}".format(remove_exam))
         cursor.execute("DELETE FROM methods_used Where exam_id = {}".format(remove_exam))
         cursor.execute("DELETE FROM Exam Where exam_id = {}".format(remove_exam))
         conn.commit()
@@ -286,7 +283,7 @@ def remove():
 def get_crn(semester):
     conn = db.db_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT class_id, CRN FROM Class Where semester = '" + semester + "';")
+    cursor.execute("SELECT class_id, CRN FROM Class Where semester = '{}';".format(semester))
     CRNs = cursor.fetchall()
     conn.close()
     cursor.close()
@@ -305,7 +302,7 @@ def get_test(class_id):
     cursor = conn.cursor()
     cursor.execute(
         "select DISTINCT exam_id, exam_num from Exam INNER JOIN Class ON Class.class_id = Exam.class_id WHERE "
-        "Class.class_id = " + class_id)
+        "Class.class_id = {}".format(class_id))
     tests = cursor.fetchall()
     print(tests)
     conn.close()

@@ -20,83 +20,86 @@
 </head>
 
 <body class="body-bg">
-    <!--[if lt IE 8]>
+<!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-    <div id="preloader">
-        <div class="loader"></div>
-    </div>
+<div id="preloader">
+    <div class="loader"></div>
+</div>
 
 
-    <div class="horizontal-main-wrapper">
+<div class="horizontal-main-wrapper">
 
-        <div class="mainheader-area">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="mt-3 mb-2">
-                        <div class="logo">
-                            <a href="{{ url_for('index') }}"><img src="/static/images/icon/logo.png" alt="logo"></a>
-                        </div>
+    <div class="mainheader-area">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="mt-3 mb-2">
+                    <div class="logo">
+                        <a href="{{ url_for('index') }}"><img src="/static/images/icon/logo.png" alt="logo"></a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
 
-        <div class="header-area header-bottom">
-            <div class="container">
-                <div class="row justify-content-center">
-                        <div class="horizontal-menu">
-                            <nav>
+    <div class="header-area header-bottom">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="horizontal-menu">
+                    <nav>
                         {% set navigation_bar = [
                             ('/', 'Analyze', 'Analyze'),
                             ('add', 'Edit', 'Edit'),
                             ('view', 'View', 'View')
                         ] -%}
                         {% set active_page = active_page|default('index') -%}
-                                <ul id="nav_menu">
-                        {% for href, id, caption in navigation_bar %}
+                        <ul id="nav_menu">
+                            {% for href, id, caption in navigation_bar %}
 
-                            <li {% if id == active_page %} class="active" {% endif %}>
-                                <a href="{{ href|e }}">
-                                    <i>{% if caption == "Analyze" %} <i class="ti-dashboard"></i>
+                                <li {% if id == active_page %} class="active" {% endif %}>
+                                    <a href="{{ href|e }}">
+                                        <i>{% if caption == "Analyze" %} <i class="ti-dashboard"></i>
                                         {% elif caption == "Edit" %} <i class="fa fa-align-left"></i>
                                         {% elif caption == "View" %} <i class="fa fa-eye"></i>
                                         {% endif %} </i>
-                                    <span>{{ caption|e }}</span>
-                                </a>
-                                {% if caption == "Edit" %}
-                                <ul class="submenu">
-                                    <li>
-                                        <a href="{{ url_for('add') }}">Add</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ url_for('remove') }}">Remove</a>
-                                    </li>
-                                </ul>
-                                {% endif %}
-                            </li>
+                                        <span>{{ caption|e }}</span>
+                                    </a>
+                                    {% if caption == "Edit" %}
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href="{{ url_for('add') }}">Add</a>
+                                            </li>
+                                            <li>
+                                                <a href="{{ url_for('remove') }}">Remove</a>
+                                            </li>
+                                        </ul>
+                                    {% endif %}
+                                </li>
                             {% endfor %}
                         </ul>
                     </nav>
-                        </div>
                 </div>
             </div>
         </div>
+    </div>
 
 
-        <div class="main-content-inner">
-            <div class="container">
-                {% block content %}{% endblock %}
-            </div>
+    <div class="main-content-inner">
+        <div class="container">
+            {% block content %}{% endblock %}
         </div>
     </div>
-    <script src="/static/js/jquery-2.2.4.min.js"></script>
+</div>
+<script src="http://code.jquery.com/jquery.js"></script>
 
-    <script src="/static/js/bootstrap.min.js"></script>
 
-    <script src="/static/js/scripts.js"></script>
+
+
+<script src="/static/js/bootstrap.min.js"></script>
+
+<script src="/static/js/scripts.js"></script>
 </body>
 
 </html>
