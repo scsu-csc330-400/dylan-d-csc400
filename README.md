@@ -9,4 +9,5 @@ Written in Python and using the Flask Framework and its libraries, the system ta
 
 # Getting Started
 Review all pages in the Wiki before you start using this app.
-Currently the ip address for this project is http://104.154.246.246/
+Currently, the ip address for this project is http://104.154.246.246/
+and the Google Form used by students to input data is https://drive.google.com/open?id=1nfRt2jut6acoOiAWyJH1szMopT8RQlPAHTgLgkVcDFM
