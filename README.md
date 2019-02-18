@@ -8,6 +8,6 @@ The system will be comprised of three main components. First, the system will re
 Written in Python and using the Flask Framework and its libraries, the system takes input from a Google Form and stores it in an SQL database running on a VM in Google Cloud. The app uses matpltlib for generating graphs, openpyxl to read grades from an Excal file.
 
 # Getting Started
-Review all pages in the Wiki before you start using this app.
+Review all pages in the Wiki, linked on the top of the page before you start using this app.
 <p>Currently, the ip address for this project is http://104.154.246.246/</p>
 The Google Form used by students to input data is <p>https://drive.google.com/open?id=1nfRt2jut6acoOiAWyJH1szMopT8RQlPAHTgLgkVcDFM</p>
