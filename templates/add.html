@@ -27,7 +27,7 @@
                                     </div>
 
                                 </div>
-                                <div class="form-group" align="center">
+                                <div align="center">
                                     <input type="submit" class="btn btn-primary" name="add_class" value="Add Class">
                                 </div>
                             </form>
@@ -35,7 +35,7 @@
                                 {% if messages %}
                                     {% for message in messages %}
                                         <div class="form-group">
-                                            <div class="alert alert-danger" role="alert">
+                                            <div class="mt-3 alert alert-danger" role="alert">
                                                 {{ message }}
                                             </div>
                                         </div>
@@ -46,7 +46,7 @@
                                 {% if messages %}
                                     {% for message in messages %}
                                         <div class="form-group">
-                                            <div class="alert alert-success" role="alert">
+                                            <div class="mt-3 alert alert-success" role="alert">
                                                 {{ message }}
                                             </div>
                                         </div>
@@ -57,87 +57,91 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-ml-12">
-                <div class=" mt-5">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 align="center" class="header-title">Add Exam</h4>
-                            <div align="center">
-                                <form method="POST">
-                                    <div align="center" class="form-group">
-                                        <label class="col-form-label">Class ID</label>
-                                        {{ add_exam_form.class_id(class="form-control col-sm-6", required="") }}
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="submit" class="btn btn-primary" name="add_exam" value="Add Exam">
-                                    </div>
-                                </form>
-                                {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
-                                    {% if messages %}
-                                        {% for message in messages %}
-                                            <div class="alert alert-success" role="alert">
-                                            {{ message }}
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endwith %}
-                                {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
-                                    {% if messages %}
-                                        {% for message in messages %}
-                                            <div class="alert alert-danger" role="alert">
-                                                {{ message }}
-                                            </div>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endwith %}
+            <div class="col-lg-3 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 align="center" class="header-title">Add Exam</h4>
+                        <form method="POST">
+                            <div class="form-row justify-content-center">
+                                <div class="col-md-5 mb-3">
+                                    <label class="col-form-label">Semester</label>
+                                    {{ add_exam_form.semester(class="form-control", required="", id="semester_exam") }}
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 mt-5">
-
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 align="center" class="header-title">Add Grades</h4>
-                            <form method="POST" enctype="multipart/form-data">
-                                <div class="form-row justify-content-center">
-                                    <div class="col-md-5 mb-3">
-                                        <label class="col-form-label">Semester</label>
-                                        {{ add_grades_form.semester(class="form-control", required="", id="semester_grade") }}
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="col-form-label">CRN</label>
-                                        {{ add_grades_form.CRN(class="form-control", required="", id="CRN_grade") }}
-                                    </div>
-                                    <div class="col-md-3 mb-3" id="examgroup">
-                                        <label class="col-form-label">Exam</label>
-                                        {{ add_grades_form.exam(class="form-control", required="", id="exam_grade") }}
-                                    </div>
-                                    <div class="col-md-12 mb-3">
-                                        <label class="col-form-label">Grades</label>
-                                        <div class="custom-file">
-                                            {{ add_grades_form.upload(class="custom-file-input", required="", type="file") }}
-                                            <label class="custom-file-label">Choose file</label>
-                                        </div>
-                                    </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="col-form-label">CRN</label>
+                                    {{ add_exam_form.CRN(class="form-control", required="", id="CRN_exam") }}
                                 </div>
                                 <div align="center">
-                                    <input type="submit" class="btn btn-primary" name="add_grades" value="Upload">
+                                    <input type="submit" class="btn btn-primary" name="add_exam" value="Add Exam">
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
+                        {% with messages = get_flashed_messages(category_filter=["cat1"]) %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="mt-3 alert alert-success" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        {% with messages = get_flashed_messages(category_filter=["cat2"]) %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 mt-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 align="center" class="header-title">Add Grades</h4>
+                        <form method="POST" enctype="multipart/form-data">
+                            <div class="form-row justify-content-center">
+                                <div class="col-md-5 mb-3">
+                                    <label class="col-form-label">Semester</label>
+                                    {{ add_grades_form.semester(class="form-control", required="", id="semester_grade") }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="col-form-label">CRN</label>
+                                    {{ add_grades_form.CRN(class="form-control", required="", id="CRN_grade") }}
+                                </div>
+                                <div class="col-md-3 mb-3" id="examgroup">
+                                    <label class="col-form-label">Exam</label>
+                                    {{ add_grades_form.exam(class="form-control", required="", id="exam_grade") }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="col-form-label">Grades</label>
+                                    <div class="custom-file">
+                                        {{ add_grades_form.upload(class="custom-file-input", required="", type="file") }}
+                                        <label class="custom-file-label">Choose file</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div align="center">
+                                <input type="submit" class="btn btn-primary" name="add_grades" value="Upload">
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
     <script>
-        let semester_select = document.getElementById('semester_grade');
-        let CRN_select = document.getElementById('CRN_grade');
-        let test_select = document.getElementById('exam_grade');
+        let semester_exam = document.getElementById('semester_exam');
+        let CRN_exam = document.getElementById('CRN_exam');
+        let semester_grade = document.getElementById('semester_grade');
+        let CRN_grade = document.getElementById('CRN_grade');
+        let test_grade = document.getElementById('exam_grade');
 
-        semester_select.onchange = function () {
-            semester = semester_select.value;
+        semester_exam.onchange = function () {
+            semester = semester_exam.value;
             console.log(semester);
 
             fetch('/CRN/' + semester).then(function (response) {
@@ -149,14 +153,33 @@
                         optionHTML += '<option value="' + CRN.class_id + '">' + CRN.CRN + '</option>';
                     }
 
-                    CRN_select.innerHTML = optionHTML;
+                    CRN_exam.innerHTML = optionHTML;
 
                 });
             });
         };
 
-        CRN_select.onchange = function () {
-            CRN = CRN_select.value;
+        semester_grade.onchange = function () {
+            semester = semester_grade.value;
+            console.log(semester);
+
+            fetch('/CRN/' + semester).then(function (response) {
+
+                response.json().then(function (data) {
+                    let optionHTML = '<option value="">---</option>';
+
+                    for (let CRN of data.CRNs) {
+                        optionHTML += '<option value="' + CRN.class_id + '">' + CRN.CRN + '</option>';
+                    }
+
+                    CRN_grade.innerHTML = optionHTML;
+
+                });
+            });
+        };
+
+        CRN_grade.onchange = function () {
+            CRN = CRN_grade.value;
 
             fetch('/test/' + CRN).then(function (response) {
 
@@ -167,7 +190,7 @@
                         optionHTML += '<option value="' + test.exam_num + '">' + test.exam_num + '</option>';
                     }
 
-                    test_select.innerHTML = optionHTML;
+                    test_grade.innerHTML = optionHTML;
                 });
             });
         }

@@ -131,7 +131,7 @@ def test1(class_num):
     conn.close()
     cursor.close()
 
-    ax.set_title('By Exam for {} {} {}'.format(CRN, class_name, class_num))
+    ax.set_title('By Class for {} {} {}'.format(CRN, class_name, class_num))
     ax.set_ylabel('Responses')
     ax.set_xlabel('Strategies')
     ax.set_xticks(index + width)
@@ -141,8 +141,8 @@ def test1(class_num):
     figure = plt.gcf()
     figure.set_size_inches(20, 8)
 
-    filename = 'graphs/exam {} {} {}.png'.format(CRN, class_name, class_num)
-    figure.savefig('.//static//graphs//exam {} {} {}'.format(CRN, class_name, class_num), dpi=150)
+    filename = 'graphs/class {} {} {}.png'.format(CRN, class_name, class_num)
+    figure.savefig('.//static//graphs//class {} {} {}'.format(CRN, class_name, class_num), dpi=150)
     figure.clf()
     return filename
 

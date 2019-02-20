@@ -24,7 +24,7 @@ class GenForm(FlaskForm):
     CRN = SelectField('CRN', choices=[])
     semester = SelectField('semester', choices=[])
     exam = SelectField('exam', choices=[])
-    type = RadioField('type', choices=[(1, 'By Exam'), (2, 'By Class'), (3, 'Normal')], default=1)
+    type = RadioField('type', choices=[(3, 'Exam'), (1, 'Class'), (2, 'Semester')], default=3)
     color_passive = SelectField('color_passive', choices=[('r', 'Red'), ('g', 'Green'), ('b', 'Blue'),
                                                           ('c', 'Cyan'), ('m', 'Magenta'), ('y', 'Yellow'),
                                                           ('k', 'Black')])
@@ -112,17 +112,20 @@ def add():
     semester = add_class_form.semester.data
     students = add_class_form.students.data
 
-    add_exam_form = AddExamForm()
+    add_exam_form = GenForm()
     conn = db.db_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT class_id FROM Class")
-    class_ids = cursor.fetchall()
-    class_id = add_exam_form.class_id.data
-    add_exam_form.class_id.choices = [("", "---")] + [(class_ids[0], class_ids[0]) for class_ids in class_ids]
 
-    add_grades_form = GenForm()
     cursor.execute("SELECT DISTINCT semester FROM Class")
     semesters = cursor.fetchall()
+
+    add_exam_form.semester.choices = [("", "---")] + [(semesters[0], semesters[0]) for semesters in semesters]
+    add_exam_form.CRN.choices = [("", "---")]
+
+    add_exam_CRN = add_exam_form.CRN.data
+
+    add_grades_form = GenForm()
+
     add_grades_form.semester.choices = [("", "---")] + [(semesters[0], semesters[0]) for semesters in semesters]
     add_grades_form.CRN.choices = [("", "---")]
     add_grades_form.exam.choices = [("", "---")]
@@ -133,16 +136,12 @@ def add():
     exam_grade = add_grades_form.exam.data
 
     if "add_class" in request.form:
-        if CRN is "" or class_name is "" or class_num is "" or semester is "":
+        if CRN is "" or class_name is "" or class_num is "" or semester is "" or students is "":
             flash("Input error", "cat3")
         elif not CRN.isdigit():
             flash("Invalid CRN", "cat3")
-        elif not class_name.isalpha():
-            flash("Invalid class name", "cat3")
         elif not class_num.isdigit():
             flash("Invalid class number", "cat3")
-        elif not semester.isalpha():
-            flash("Invalid semester", "cat3")
         elif not students.isdigit():
             flash("Invalid student number", "cat3")
         else:
@@ -168,6 +167,8 @@ def add():
             flash("New Class ID: {} with student ids from {}".format(class_id[0][0], students_range), "cat4")
 
     elif "add_exam" in request.form:
+        class_id = add_exam_CRN
+        print(class_id)
         if class_id is "":
             flash("Input error", "cat1")
         else:
@@ -246,32 +247,45 @@ def view():
 def remove():
     conn = db.db_conn()
     cursor = conn.cursor()
-    cursor.execute("SELECT class_id FROM Class")
-    class_ids = cursor.fetchall()
+    cursor.execute("SELECT DISTINCT semester FROM Class")
+    semesters = cursor.fetchall()
 
-    cursor.execute("SELECT exam_id FROM Exam")
-    exam_ids = cursor.fetchall()
+    remove_class_form = GenForm()
+    remove_class_form.semester.choices = [("", "---")] + [(semesters[0], semesters[0]) for semesters in semesters]
+    remove_class_form.CRN.choices = [("", "---")]
 
-    remove_class_form = RemoveClassForm()
-    remove_class = remove_class_form.class_id.data
-    remove_class_form.class_id.choices = [("", "---")] + [(class_ids[0], class_ids[0]) for class_ids in class_ids]
+    remove_class_CRN = remove_class_form.CRN.data
 
-    remove_exam_form = RemoveExamForm()
-    remove_exam = remove_class_form.class_id.data
-    remove_exam_form.class_id.choices = [("", "---")] + [(exam_ids[0], exam_ids[0]) for exam_ids in exam_ids]
+    remove_exam_form = GenForm()
+    remove_exam_form.semester.choices = [("", "---")] + [(semesters[0], semesters[0]) for semesters in semesters]
+    remove_exam_form.CRN.choices = [("", "---")]
+    remove_exam_form.exam.choices = [("", "---")]
+
+    remove_exam_CRN = remove_exam_form.CRN.data
+    remove_exam_exam = remove_exam_form.exam.data
 
     if "remove_class" in request.form:
+        remove_class = remove_class_CRN
+        cursor.execute("SELECT * FROM Class WHERE class_id = {}".format(remove_class))
+        confirm = cursor.fetchall()[0]
         cursor.execute("DELETE FROM Responses Where class_id = {}".format(remove_class))
         cursor.execute("DELETE FROM methods_used Where class_id = {}".format(remove_class))
         cursor.execute("DELETE FROM Exam Where class_id = {}".format(remove_class))
         cursor.execute("DELETE FROM Student WHERE Class_id = {}".format(remove_class))
         cursor.execute("DELETE FROM Class Where class_id = {}".format(remove_class))
+        flash("Removed class {} {} {} {} {}".format(confirm[0], confirm[1], confirm[2], confirm[3], confirm[4]), 'cat5')
         conn.commit()
 
     elif "remove_exam" in request.form:
-        cursor.execute("DELETE FROM Responses Where exam_num = {}".format(remove_exam))
-        cursor.execute("DELETE FROM methods_used Where exam_id = {}".format(remove_exam))
+        cursor.execute("SELECT exam_id FROM Exam WHERE class_id = {} AND exam_num = {}".format(remove_exam_CRN, remove_exam_exam))
+        remove_exam = cursor.fetchall()[0][0]
+        cursor.execute("SELECT * FROM Class WHERE class_id = {}".format(remove_exam_CRN))
+        confirm = cursor.fetchall()[0]
+        print(remove_exam)
+        cursor.execute("DELETE FROM Responses Where exam_num = {} AND class_id = {}".format(remove_exam_exam, remove_exam_CRN))
+        cursor.execute("DELETE FROM methods_used Where exam_id = {} AND class_id = {}".format(remove_exam_exam, remove_exam_CRN))
         cursor.execute("DELETE FROM Exam Where exam_id = {}".format(remove_exam))
+        flash("Removed exam from {} {} {} {} {}".format(confirm[0], confirm[1], confirm[2], confirm[3], confirm[4]), 'cat6')
         conn.commit()
     cursor.close()
     conn.close()
