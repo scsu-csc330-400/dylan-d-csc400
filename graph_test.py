@@ -3,7 +3,6 @@ import textwrap
 import numpy as np
 
 import matplotlib
-import six
 from matplotlib import colors
 
 import db
@@ -107,17 +106,17 @@ def test1(class_num):
     rects_list = []
     for i in range(len(exam_list)):
         if i == 0:
-            rects = ax.bar(index, exam_list[i], width, color='red', label='Exam {}'.format(i))
+            rects = ax.bar(index, exam_list[i], width, color='red', label='Exam {}'.format(i + 1))
             rects_list.append(rects)
             autolabel(rects, ax)
             print(exam_list[i])
         elif i == 1:
-            rects = ax.bar(index + width, exam_list[i], width, color='green', label='Exam {}'.format(i))
+            rects = ax.bar(index + width, exam_list[i], width, color='green', label='Exam {}'.format(i + 1))
             rects_list.append(rects)
             autolabel(rects, ax)
             print(exam_list[i])
         else:
-            rects = ax.bar(index + width * i, exam_list[i], width, color='blue', label='Exam {}'.format(i))
+            rects = ax.bar(index + width * i, exam_list[i], width, color='blue', label='Exam {}'.format(i + 1))
             rects_list.append(rects)
             autolabel(rects, ax)
             print(exam_list[i])
@@ -176,7 +175,6 @@ def test2(semester):
 
     conn.close()
     cursor.close()
-    color_list = get_colors()
 
     strats = get_strats()[0]
     strats = [textwrap.fill(text, 15) for text in strats]
@@ -205,7 +203,7 @@ def test2(semester):
             autolabel(rects, ax)
             print(sums[i])
 
-    ax.set_title('By semester for {}'.format(semester))
+    ax.set_title('By Semester for {}'.format(semester))
     ax.set_ylabel('Responses')
     ax.set_xlabel('Strategies')
     ax.set_xticks(index + width)
@@ -218,8 +216,7 @@ def test2(semester):
     filename = 'graphs/semester {}.png'.format(semester)
     figure.savefig('.//static//graphs//semester {}.png'.format(semester), dpi=150)
     figure.clf()
-    # print(class_list)
-    # print(sums)
+
     return filename
 
 
@@ -246,29 +243,3 @@ def get_strats(color_passive="red", color_active="blue"):
         else:
             color.append("k")
     return strats, color
-
-
-def get_colors():
-    colors_ = list(six.iteritems(colors.cnames))
-
-    # Add the single letter colors.
-    for name, rgb in six.iteritems(colors.ColorConverter.colors):
-        hex_ = colors.rgb2hex(rgb)
-        colors_.append((name, hex_))
-
-    # Transform to hex color values.
-    hex_ = [color[1] for color in colors_]
-    # Get the rgb equivalent.
-    rgb = [colors.hex2color(color) for color in hex_]
-    # Get the hsv equivalent.
-    hsv = [colors.rgb_to_hsv(color) for color in rgb]
-
-    # Split the hsv values to sort.
-    hue = [color[0] for color in hsv]
-    sat = [color[1] for color in hsv]
-    val = [color[2] for color in hsv]
-
-    # Sort by hue, saturation and value.
-    ind = np.lexsort((val, sat, hue))
-    sorted_colors = [colors_[i] for i in ind]
-    return sorted_colors
