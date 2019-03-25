@@ -42,7 +42,7 @@ def test(exam, class_num, color_passive, color_active):
             else:
                 color.append(color_active)
 
-    avgs, strats, color_list = (list(t) for t in zip(*sorted(zip(avgs, strats, color))))
+    avgs, strats, color = (list(t) for t in zip(*sorted(zip(avgs, strats, color))))
 
     for i in range(len(avgs)):
         if avgs[0] == 0:
@@ -61,7 +61,7 @@ def test(exam, class_num, color_passive, color_active):
     strats = [textwrap.fill(text, 15) for text in strats]
 
     index = np.arange(len(strats))
-    plt.bar(index, avgs, align='center', color=color_list)
+    plt.bar(index, avgs, align='center', color=color)
     plt.xlabel('Study Strategies', fontsize=15)
     plt.ylabel('Averages', fontsize=15)
     plt.xticks(index, strats, fontsize=10)
