@@ -211,10 +211,11 @@ def add():
 
         grades_dict = dict(zip(ids, grades))
 
-        cursor.execute("SELECT count(response_id) FROM Responses WHERE class_id = {} AND exam_num = {}".format(class_id_grade, exam_grade))
-        verify = cursor.fetchall()[0][0]
+        cursor.execute("SELECT student_identifier FROM Responses WHERE class_id = {} AND exam_num = {}".format(class_id_grade, exam_grade))
+        verify = cursor.fetchall()
+        print(verify)
 
-        if verify == max_row-1:
+        if verify == verify:
             count = 0
             for student_id, grade in grades_dict.items():
                 print(student_id, grade)
@@ -222,14 +223,13 @@ def add():
                     "SELECT response_id FROM Responses WHERE student_identifier = {} AND class_id = {} AND exam_num = {}".format(
                         student_id, class_id_grade, exam_grade))
                 response_id_tmp = cursor.fetchall()
-                print(response_id_tmp[0][0])
-                cursor.execute(
-                    "UPDATE Responses SET grade = {} WHERE response_id = {}".format(grade, response_id_tmp[0][0]))
-                count = count+1
+                if response_id_tmp != []:
+                    print(response_id_tmp)
+                    cursor.execute(
+                        "UPDATE Responses SET grade = {} WHERE response_id = {}".format(grade, response_id_tmp[0][0]))
+                    count = count+1
             conn.commit()
             flash("{} rows affected".format(count), "cat7")
-        else:
-            flash("Too many rows. {} expected, {} given".format(verify, max_row-1), "cat7")
     conn.close()
     cursor.close()
     return render_template('add.html', add_class_form=add_class_form, add_exam_form=add_exam_form, heading="Edit",
